@@ -11,8 +11,8 @@ import re
 class ImagespiderPipeline(ImagesPipeline):
 
     def get_media_requests(self, item, info):
-        for img_url in item["img_urls"]:
-            yield Request(img_url, meta={"name": item["img_name"]})
+        # for img_url in item["img_urls"]:
+        yield Request(item["img_url"], meta={"name": item["img_name"]})
 
     # 图片重命名
     def file_path(self, request, response=None, info=None):
