@@ -10,5 +10,6 @@ import scrapy
 
 class ImagespiderItem(scrapy.Item):
     img_urls = scrapy.Field()
+    img_name = scrapy.Field()
 
 
