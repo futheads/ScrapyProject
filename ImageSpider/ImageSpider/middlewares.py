@@ -6,7 +6,7 @@
 # https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
-
+import random
 
 class ImagespiderSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -78,7 +78,16 @@ class ImagespiderDownloaderMiddleware(object):
         # - or return a Request object
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
-        return None
+
+        url = request.url
+
+        # http: // img1.mm131.me / pic / 4263 / 1.jpg
+        # http: // www.mm131.com / xinggan / 4491_3.html
+        if url:
+            if str(url).endswith(".jpg"):
+                request.headers["Referer"] = "http://www.mm131.com/xinggan/{}_{}.html".format(url, random.randint(0, 10))
+            else:
+                request.headers["Referer"] = url
 
     def process_response(self, request, response, spider):
         # Called with the response returned from the downloader.
