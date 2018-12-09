@@ -9,6 +9,6 @@ import scrapy
 
 
 class CommonspiderItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    tag = scrapy.Field()
+    cont = scrapy.Field()
+    author = scrapy.Field()
