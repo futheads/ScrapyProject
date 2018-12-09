@@ -101,3 +101,57 @@ class CommonspiderDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+import random
+from scrapy.conf import settings
+
+class ProxyMiddleware(object):
+    def process_request(self, request, spider):
+        if spider.name == "proxySpider":
+            proxy = random.choice(settings["PROXIES"])
+            request.meta["proxy"] = proxy
+
+class UAMiddleware(object):
+    def process_request(self, request, spider):
+        ua = random.choice(settings['USER_AGENT_LIST'])
+        request.headers['User-Agent'] = ua
+
+class LoginMiddleware(object):
+    def process_request(self, request, spider):
+        if spider.name == 'loginSpider':
+            cookies = {
+                "__cfduid": "d38263651ad8236175a7893f4beba79301544273385",
+                "session": ".eJwljkuKwzAQRK8ieh2CZLd-PsXshzC0pJJtxnEGy1mF3D2CWRVFPYr3op-6SVvQaPp-kTp70B2tyQy60NcGaVDbY1brrs6Hkpz7qM5lbeqvM1e6vW-XfnKgLTSdxxO9rYUmyjZxinGMIweXpHhjqkX1iSt7yeNoQ3JOwCzGVi6So2QPuKFUY7MURLAuejAupKJDEbiKQapnzmJt9dbpBOiBE2sOKcLAakneGRSuXf_ZcPzL_K77vMsd9P4AL-1Krw.Du5pfg.wBWgWzhdbtBjU8QWLvyfCSN9Zng"
+            }
+            request.cookies = cookies
+
+from selenium import webdriver
+import time
+from scrapy.http import HtmlResponse
+
+class SeleniumMiddleware(object):
+    def __init__(self):
+        options = webdriver.ChromeOptions()
+        options.add_argument("--headless")
+        options.add_experimental_option("excludeSwitches", ["ignore-certificate-errors"])
+        self.driver = webdriver.Chrome(executable_path="D:/program/webdriver/chromedriver.exe", chrome_options=options)
+
+    def process_request(self, request, spider):
+        # if spider.name == 'seleniumSpider':
+        self.driver.get(request.url)
+        time.sleep(1)
+        body = self.driver.page_source
+        return HtmlResponse(self.driver.current_url, body=body, encoding='utf-8', request=request)
+
+import datetime
+from CommonSpider.items import ErrorItem
+
+class ExceptionCheckSpider(object):
+    def process_spider_exception(self, response, exception, spider):
+        print('返回的内容是：{}\n报错原因：{}'.format(response.body.decode(), type(exception)))
+        page = response.meta["page"]
+        now_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        error_item = ErrorItem()
+        error_item["page"] = page
+        error_item["error_time"] = now_time
+        yield error_item

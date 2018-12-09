@@ -30,15 +30,19 @@ class MysqlPipeline(object):
         self.connect.commit()
         return item     # 这个必须有
 
+from CommonSpider.items import ErrorItem
+
 class MongodbPipeline(object):
     def __init__(self):
         client = pymongo.MongoClient("127.0.0.1", 27017)
-        db = client["test"]
-        self.post = db["mingyan"]
+        self.db = client["test"]
 
     def process_item(self, item, spider):
-        postItem = dict(item)
-        self.post.insert(postItem)
+        if isinstance(item, ErrorItem):
+            post = self.db["error"]
+        else:
+            post = self.db["mingyan"]
+        post.insert(dict(item))
         return item
 
 if __name__ == '__main__':

@@ -3,13 +3,6 @@ import scrapy
 from CommonSpider.items import CommonspiderItem
 
 class CommonSpider(scrapy.Spider):
-    # name = 'common'
-    # allowed_domains = ['exercise.kingname.info']
-    # start_urls = ['http://exercise.kingname.info/']
-    #
-    # def parse(self, response):
-    #     pass
-
     name = "common"
     allowed_domains = ["lab.scrapyd.cn"]
     start_urls = ["http://lab.scrapyd.cn"]
